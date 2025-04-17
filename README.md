@@ -2,7 +2,7 @@
 
 ## Description
 
-This Chrome extension automatically monitors a specific university course schedule page for the availability of a class taught by a particular instructor. It auto-refreshes the page at a set interval and plays a notification sound (`beep-08b.mp3`) if a matching course section is found with a status of "open", "reserved", or "waitlist".
+This Chrome extension automatically monitors a specific university course schedule page for the availability of a class taught by a particular instructor. It auto-refreshes the page at a set to find a course a status of "open", "open; reserved", or "waitlist".
 
 This version is configured for **[Mention Target University/Site, e.g., UT Austin]** and currently checks for courses taught by **ELNOZAHY, MOOTAZ N**.
 
@@ -11,19 +11,16 @@ This version is configured for **[Mention Target University/Site, e.g., UT Austi
 * **Auto-Refresh:** Automatically reloads the target course schedule page periodically.
 * **Specific Check:** Looks for table rows matching a predefined instructor name.
 * **Status Monitoring:** Checks if the status for the matched course is "open", "reserved", or "waitlist".
-* **Sound Notification:** Plays `beep-08b.mp3` when a match is found.
 * **Stops on Match:** The auto-refresh cycle stops once a matching, available course is detected.
 
 ## Files Included
 
 * `manifest.json`: Configures the extension, permissions, and target page URL.
 * `content.js`: Contains the core logic for checking the table and playing the sound.
-* `beep-08b.mp3`: The sound file played upon finding a match.
 
 ## Prerequisites
 
 * Google Chrome browser
-* The `beep-08b.mp3` file must be present in the same directory as `manifest.json`.
 
 ## Setup & Installation
 
@@ -49,7 +46,6 @@ Once installed and configured:
 1.  Navigate to the specific course schedule page in Chrome that matches the URL pattern you set in `manifest.json`.
 2.  The extension will automatically start running in the background on that page.
 3.  It will refresh the page based on the interval set in `content.js`.
-4.  If it finds a row matching the hardcoded instructor and status criteria, it will play the `beep-08b.mp3` sound and stop refreshing. You should hear the sound through your computer's speakers/headphones.
 
 ## Customization (Manual Code Edits)
 
@@ -61,7 +57,7 @@ This version requires editing the code directly to change parameters:
     * Change the name within the quotes to the exact name you want to track.
 * **Target Statuses:**
     * Edit `content.js`.
-    * Find the line `const TARGET_STATUSES = ["open", "reserved", "waitlist"];`
+    * Find the line `const TARGET_STATUSES = ["open", "open; reserved", "waitlist"];`
     * Modify the array to include or remove statuses (must be lowercase).
 * **Refresh Interval:**
     * Edit `content.js`.
@@ -69,10 +65,6 @@ This version requires editing the code directly to change parameters:
     * Change the number `60000` (which is 60 seconds) to your desired interval in milliseconds (e.g., `30000` for 30 seconds). Use intervals >= 5000 (5 seconds) to avoid issues.
 * **Target URL:**
     * Edit `manifest.json` as described in the "Setup & Installation" section (update **both** `content_scripts.matches` and `web_accessible_resources.matches`).
-* **Sound File:**
-    * Replace `beep-08b.mp3` with your desired sound file (must be in the root directory).
-    * Update the filename in the `web_accessible_resources` section of `manifest.json`.
-    * Update the filename in the `chrome.runtime.getURL("beep-08b.mp3")` call within `content.js`.
 
 **Important:** After making any code changes (`.js` or `.json`), you need to go back to `chrome://extensions` and click the **reload** icon for this extension for the changes to take effect.
 
