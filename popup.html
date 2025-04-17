@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course Checker Settings</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            min-width: 300px; /* Slightly wider */
+            padding: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 95%; /* More responsive width */
+            padding: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+        input[type="number"] {
+            width: 60px; /* Keep number input smaller */
+        }
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #005f86; /* UT Blue-ish */
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        button:hover {
+            background-color: #004c6b;
+        }
+        #statusMessage {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 1em;
+        }
+        .hint {
+             font-size: 0.8em;
+             color: #555;
+             margin-bottom: 10px;
+             margin-top: -8px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Course Checker Settings</h2>
+
+    <div>
+        <label for="urlPatternInput">Target URL Pattern:</label>
+        <input type="text" id="urlPatternInput" placeholder="e.g., https://registrar.utexas.edu/schedules/*">
+         <div class="hint">Use * as a wildcard. The script will only run on pages matching this pattern.</div>
+    </div>
+
+    <div>
+        <label for="profNameInput">Target Professor(s):</label>
+        <input type="text" id="profNameInput" placeholder="e.g., ELNOZAHY, MOOTAZ N">
+        <div class="hint">Enter full names, separated by commas if more than one.</div>
+    </div>
+
+    <div>
+        <label for="refreshIntervalInput">Refresh every:</label>
+        <input type="number" id="refreshIntervalInput" min="5">
+        <span>seconds</span>
+    </div>
+
+    <button id="saveButton">Save Settings</button>
+    <div id="statusMessage"></div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
