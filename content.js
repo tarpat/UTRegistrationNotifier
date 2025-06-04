@@ -74,7 +74,8 @@ function checkCourseStatus() {
                  console.log(`Course Checker: Found a match! Instructor: ${instructorName}, Status: ${status}`);
                  foundMatch = true;
                  // Updated alert to use the variable holding the target name
-                 alert(`Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`);
+                //  alert(`Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`);
+                 const notification = new Notification("CS 439 Course Opened", {body: `Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
             }
             // Optional: Log only for the target professor
             else if (instructorName === targetProfessor) {

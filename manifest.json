@@ -4,7 +4,8 @@
     "version": "1.2",
     "description": "Checks course availability for specific instructors/URLs. Configurable interval, URL pattern, and instructors.",
     "permissions": [
-      "storage"
+      "storage",
+      "notifications"
     ],
     "content_scripts": [
       {
