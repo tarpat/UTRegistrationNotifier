@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: sans-serif;
-            min-width: 300px; /* Slightly wider */
+            min-width: 350px; /* Slightly wider for new options */
             padding: 10px;
         }
         label {
@@ -44,6 +44,20 @@
              margin-bottom: 10px;
              margin-top: -8px;
         }
+        /* Styles for status checkboxes */
+        #statusCheckboxesContainer div {
+            margin-bottom: 3px;
+        }
+        #statusCheckboxesContainer input[type="checkbox"] {
+            margin-right: 5px;
+            width: auto; /* Override general input width for checkboxes */
+            vertical-align: middle;
+        }
+        #statusCheckboxesContainer label.checkbox-label { /* Label next to checkbox */
+            font-weight: normal;
+            display: inline;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -56,9 +70,28 @@
     </div>
 
     <div>
-        <label for="profNameInput">Target Professor(s):</label>
+        <label for="profNameInput">Target Professor:</label>
         <input type="text" id="profNameInput" placeholder="e.g., ELNOZAHY, MOOTAZ N">
-        <div class="hint">Enter full names, separated by commas if more than one.</div>
+        <div class="hint">Enter the full name of the professor.</div>
+    </div>
+
+    <div>
+        <label>Target Statuses:</label>
+        <div id="statusCheckboxesContainer">
+            <div>
+                <input type="checkbox" id="checkboxOpen" name="status" value="open">
+                <label for="checkboxOpen" class="checkbox-label">Open</label>
+            </div>
+            <div>
+                <input type="checkbox" id="checkboxOpenReserved" name="status" value="open; reserved">
+                <label for="checkboxOpenReserved" class="checkbox-label">Open; Reserved</label>
+            </div>
+            <div>
+                <input type="checkbox" id="checkboxWaitlist" name="status" value="waitlist">
+                <label for="checkboxWaitlist" class="checkbox-label">Waitlist</label>
+            </div>
+        </div>
+        <div class="hint">Select which course statuses to monitor.</div>
     </div>
 
     <div>

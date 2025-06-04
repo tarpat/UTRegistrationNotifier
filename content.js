@@ -1,14 +1,15 @@
 // --- Defaults (used if storage is empty/invalid) ---
 const DEFAULT_URL_PATTERN = "https://utdirect.utexas.edu/apps/registrar/course_schedule/20259/results/?ccyys=20259&search_type_main=COURSE&fos_cn=C+S&course_number=439&x=0&y=0";
-const DEFAULT_PROF_NAME = "ELNOZAHY, MOOTAZ N"; // Default is now a single string
+const DEFAULT_PROF_NAME = "ELNOZAHY, MOOTAZ N";
 const DEFAULT_REFRESH_INTERVAL_SECONDS = 60;
-const TARGET_STATUSES = ["open", "open; reserved", "waitlist"];
+const DEFAULT_TARGET_STATUSES = ["open", "open; reserved", "waitlisted"]; // Renamed for clarity
 // --- End Defaults ---
 
 // --- Global variables for settings ---
 let targetUrlPattern = "";
-let targetProfessor = ""; // Changed from targetProfessors array to string
+let targetProfessor = "";
 let currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
+let selectedTargetStatuses = []; // Will hold user-selected statuses
 // --- End Globals ---
 
 
@@ -33,7 +34,7 @@ function scheduleRefresh(intervalMs) {
         console.warn(`Course Checker: Refresh interval ${intervalMs}ms too low. Using 5000ms.`);
         intervalMs = 5000;
     }
-    console.log(`Course Checker: No match found. Refreshing in ${intervalMs / 1000} seconds...`);
+    console.log(`Course Checker: No match found or criteria not met. Refreshing in ${intervalMs / 1000} seconds...`);
     setTimeout(() => {
         location.reload();
     }, intervalMs);
@@ -41,7 +42,7 @@ function scheduleRefresh(intervalMs) {
 
 // --- Main Logic ---
 function checkCourseStatus() {
-    console.log("Course Checker: Running check on matched URL:", window.location.href);
+    console.log("Course Checker: Running checkCourseStatus on matched URL:", window.location.href);
     let foundMatch = false;
 
     const targetTable = document.querySelector('table.rwd-table.results');
@@ -68,18 +69,17 @@ function checkCourseStatus() {
             const instructorName = instructorSpan.textContent.trim();
             const status = statusCell.textContent.trim().toLowerCase();
 
-            // --- *** UPDATED COMPARISON *** ---
-            // Check if instructor name matches the single target AND status matches
-            if (instructorName === targetProfessor && TARGET_STATUSES.includes(status)) {
-                 console.log(`Course Checker: Found a match! Instructor: ${instructorName}, Status: ${status}`);
+            // **** ADDED DETAILED LOGGING BEFORE CHECK ****
+            console.log(`Course Checker: Checking course row. Instructor: ${instructorName}, Page Status: '${status}'. Using selectedTargetStatuses: ${JSON.stringify(selectedTargetStatuses)}`);
+
+            if (instructorName === targetProfessor && selectedTargetStatuses.includes(status)) {
+                 console.log(`Course Checker: MATCH FOUND! Instructor: ${instructorName}, Status: '${status}'. Notifying.`);
                  foundMatch = true;
-                 // Updated alert to use the variable holding the target name
-                //  alert(`Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`);
-                 const notification = new Notification("CS 439 Course Opened", {body: `Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
+                 const notification = new Notification("Course Opened", {body: `Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
             }
-            // Optional: Log only for the target professor
             else if (instructorName === targetProfessor) {
-                 console.log(`Course Checker: Checking row - Instructor: ${instructorName}, Status: ${status} (status no match)`);
+                 // This log helps see attempts for the right professor but wrong status based on selection
+                 console.log(`Course Checker: Checking row - Target Professor: ${instructorName}, Status: '${status}' (Status not in user selection or not a match: ${!selectedTargetStatuses.includes(status)})`);
             }
         }
     }); // End rows.forEach
@@ -87,46 +87,69 @@ function checkCourseStatus() {
     if (!foundMatch) {
         scheduleRefresh(currentRefreshIntervalMs);
     } else {
-        console.log("Course Checker: Match found, stopping refresh cycle.");
+        console.log("Course Checker: Match found! Resuming in 30 seconds");
+        scheduleRefresh(currentRefreshIntervalMs);
+        scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
     }
 }
 
 
 // --- Initialization ---
 (async () => {
+    console.log("Course Checker: Content script initializing...");
     let settings;
     try {
+        console.log("Course Checker: Attempting to load settings from chrome.storage.sync...");
         settings = await chrome.storage.sync.get({
             refreshIntervalSeconds: DEFAULT_REFRESH_INTERVAL_SECONDS,
             urlPattern: DEFAULT_URL_PATTERN,
-            profName: DEFAULT_PROF_NAME // Use 'profName' key
+            profName: DEFAULT_PROF_NAME,
+            selectedStatuses: DEFAULT_TARGET_STATUSES
         });
+        // Using JSON.parse(JSON.stringify()) for logging to ensure the current state is captured
+        console.log("Course Checker: Settings loaded from storage (or defaults applied by .get if key was missing):", JSON.parse(JSON.stringify(settings)));
 
         // --- 1. Set Target URL Pattern ---
-        targetUrlPattern = settings.urlPattern.trim();
-        if (!targetUrlPattern) {
-             console.warn("Course Checker: Target URL pattern is empty in storage, using default.");
+        targetUrlPattern = settings.urlPattern ? settings.urlPattern.trim() : DEFAULT_URL_PATTERN;
+        if (!settings.urlPattern || !settings.urlPattern.trim()) {
+             console.warn("Course Checker: Target URL pattern was empty in storage or after trim, using default.");
              targetUrlPattern = DEFAULT_URL_PATTERN;
         }
 
-        // --- 2. *** Check if current URL matches the target pattern *** ---
+        // --- 2. Check if current URL matches the target pattern ---
         const currentUrl = window.location.href;
         if (!matchesPattern(targetUrlPattern, currentUrl)) {
             console.log(`Course Checker: Current URL [${currentUrl}] does not match target pattern [${targetUrlPattern}]. Stopping script on this page.`);
-            return; // EXIT SCRIPT IF URL DOESN'T MATCH
+            return;
         }
         console.log(`Course Checker: Current URL matches target pattern. Proceeding...`);
 
-        // --- 3. Set Target Professor --- // <<< *** SIMPLIFIED ***
-        targetProfessor = settings.profName.trim(); // Assign directly
-        if (!targetProfessor) {
-            console.warn("Course Checker: No target professor name found in storage, using default.");
-            targetProfessor = DEFAULT_PROF_NAME; // Use string default
+        // --- 3. Set Target Professor ---
+        targetProfessor = settings.profName ? settings.profName.trim() : DEFAULT_PROF_NAME;
+        if (!settings.profName || !settings.profName.trim()) {
+            console.warn("Course Checker: No target professor name found in storage or empty after trim, using default.");
+            targetProfessor = DEFAULT_PROF_NAME;
         }
-        console.log("Course Checker: Target Professor:", targetProfessor); // Log single name
+        console.log("Course Checker: Target Professor:", targetProfessor);
+
+        // --- 4. Set Target Statuses ---
+        console.log("Course Checker: Raw 'settings.selectedStatuses' from storage/get_default:", JSON.parse(JSON.stringify(settings.selectedStatuses)));
+        selectedTargetStatuses = settings.selectedStatuses; // This should be the user's array or DEFAULT_TARGET_STATUSES
+
+        if (!Array.isArray(selectedTargetStatuses)) {
+            console.warn(`Course Checker: 'selectedTargetStatuses' from settings was not an array. It was: ${JSON.stringify(selectedTargetStatuses)}. Resetting to defaults.`);
+            selectedTargetStatuses = [...DEFAULT_TARGET_STATUSES];
+        } else if (selectedTargetStatuses.length === 0) {
+            // This case should ideally not happen if popup.js validation works (prevents saving empty array)
+            console.warn("Course Checker: 'selectedTargetStatuses' from settings was an empty array. Resetting to defaults. This might indicate an issue with saving settings.");
+            selectedTargetStatuses = [...DEFAULT_TARGET_STATUSES];
+        } else {
+            console.log("Course Checker: 'selectedTargetStatuses' is valid and populated from storage/get_default.");
+        }
+        console.log("Course Checker: Final 'selectedTargetStatuses' to be used for matching:", JSON.parse(JSON.stringify(selectedTargetStatuses)));
 
 
-        // --- 4. Set Refresh Interval ---
+        // --- 5. Set Refresh Interval ---
         const seconds = parseInt(settings.refreshIntervalSeconds, 10);
         if (!isNaN(seconds) && seconds >= 5) {
             currentRefreshIntervalMs = seconds * 1000;
@@ -138,20 +161,28 @@ function checkCourseStatus() {
 
 
     } catch (error) {
-        console.error("Course Checker: Error loading settings from storage. Using defaults.", error);
+        console.error("Course Checker: Error loading settings from storage. Using defaults for all.", error);
         targetUrlPattern = DEFAULT_URL_PATTERN;
-        targetProfessor = DEFAULT_PROF_NAME; // Assign default string
+        targetProfessor = DEFAULT_PROF_NAME;
+        selectedTargetStatuses = [...DEFAULT_TARGET_STATUSES]; // Fallback to default statuses on error
         currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
 
          const currentUrl = window.location.href;
          if (!matchesPattern(targetUrlPattern, currentUrl)) {
-             console.log(`Course Checker: Current URL [${currentUrl}] does not match default target pattern [${targetUrlPattern}]. Stopping script.`);
-             return; // EXIT SCRIPT
+             console.log(`Course Checker: Current URL [${currentUrl}] does not match default target pattern [${targetUrlPattern}]. Stopping script (in error catch).`);
+             return;
          }
+         console.log("Course Checker: Using (due to error) default Professor:", targetProfessor);
+         console.log("Course Checker: Using (due to error) default Target Statuses:", JSON.parse(JSON.stringify(selectedTargetStatuses)));
+         console.log(`Course Checker: Using (due to error) default refresh interval of ${currentRefreshIntervalMs / 1000} seconds.`);
     }
 
-    // --- 5. Run the first check ---
-    console.log("Course Checker: Initializing check...");
+    // --- 6. Run the first check ---
+    if (selectedTargetStatuses.length === 0) {
+        // This state should ideally be prevented by popup validation
+        console.warn("Course Checker: CRITICAL - No target statuses selected or determined. The script will not find any status matches. Please check settings and console logs for errors in loading statuses.");
+    }
+    console.log("Course Checker: Initializing first checkCourseStatus call...");
     setTimeout(checkCourseStatus, 500);
 
 })(); // End async IIFE
