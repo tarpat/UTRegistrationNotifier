@@ -61,21 +61,27 @@ function checkCourseStatus() {
 
         const instructorCell = row.querySelector('td[data-th="Instructor"]');
         const statusCell = row.querySelector('td[data-th="Status"]');
-
-        if (instructorCell && statusCell) {
+        const uniqueCell = row.querySelector('td[data-th="Unique"]');
+        
+        if (instructorCell && statusCell && uniqueCell) {
             const instructorSpan = instructorCell.querySelector('span');
             if (!instructorSpan) return;
-
             const instructorName = instructorSpan.textContent.trim();
+            const uniqueNum = uniqueCell.textContent.trim();
+            console.log(`uniqueNum : ${uniqueNum}`);
             const status = statusCell.textContent.trim().toLowerCase();
 
             // **** ADDED DETAILED LOGGING BEFORE CHECK ****
             console.log(`Course Checker: Checking course row. Instructor: ${instructorName}, Page Status: '${status}'. Using selectedTargetStatuses: ${JSON.stringify(selectedTargetStatuses)}`);
 
             if (instructorName === targetProfessor && selectedTargetStatuses.includes(status)) {
-                 console.log(`Course Checker: MATCH FOUND! Instructor: ${instructorName}, Status: '${status}'. Notifying.`);
-                 foundMatch = true;
-                 const notification = new Notification("Course Opened", {body: `Match Found!\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
+                console.log(`Course Checker: MATCH FOUND! Instructor: ${instructorName}, Status: '${status}'. Notifying.`);
+                foundMatch = true;
+                const notification = new Notification("Course Opened", {body: `Match Found!\nUnique Number: ${uniqueNum}\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
+                notification.onclick = (event) => {
+                    event.preventDefault(); // prevent the browser from focusing the Notification's tab
+                window.open(`https://utdirect.utexas.edu/registration/registration.WBX?s_ccyys=20259&s_af_unique=${uniqueNum}`, "_blank");
+                };
             }
             else if (instructorName === targetProfessor) {
                  // This log helps see attempts for the right professor but wrong status based on selection
