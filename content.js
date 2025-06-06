@@ -94,7 +94,6 @@ function checkCourseStatus() {
         scheduleRefresh(currentRefreshIntervalMs);
     } else {
         // console.log("Course Checker: Match found! Resuming in 30 seconds");
-        scheduleRefresh(currentRefreshIntervalMs);
         scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
     }
 }
