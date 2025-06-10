@@ -9,6 +9,7 @@ const DEFAULT_TARGET_STATUSES = ["open", "open; reserved", "waitlisted"]; // Ren
 let targetUrlPattern = "";
 let targetProfessor = "";
 let currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
+let runningNotifier;
 let selectedTargetStatuses = []; // Will hold user-selected statuses
 // --- End Globals ---
 
@@ -77,7 +78,7 @@ function checkCourseStatus() {
             if (instructorName === targetProfessor && selectedTargetStatuses.includes(status)) {
                 console.log(`Course Checker: MATCH FOUND! Instructor: ${instructorName}, Status: '${status}'. Notifying.`);
                 foundMatch = true;
-                const notification = new Notification("Course Opened", {body: `Match Found!\nUnique Number: ${uniqueNum}\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
+                const notification = new Notification("Course Opened", {requireInteraction: true, body: `Match Found!\nUnique Number: ${uniqueNum}\nInstructor: ${targetProfessor}\nStatus: ${status.toUpperCase()}`});
                 notification.onclick = (event) => {
                     event.preventDefault(); // prevent the browser from focusing the Notification's tab
                 window.open(`https://utdirect.utexas.edu/registration/registration.WBX?s_ccyys=20259&s_af_unique=${uniqueNum}`, "_blank");
@@ -91,7 +92,15 @@ function checkCourseStatus() {
     }); // End rows.forEach
 
     if (!foundMatch) {
+        if (new Date(Date.now()).getMinutes() % 10 == 0 && new Date(Date.now()).getSeconds() < 5) {
+            let utcDate1 = new Date(Date.now());
+            runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
+        } else {
+            let utcDate1 = new Date(Date.now());
+            console.log(`Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`);
+        }
         scheduleRefresh(currentRefreshIntervalMs);
+        
     } else {
         // console.log("Course Checker: Match found! Resuming in 30 seconds");
         scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
