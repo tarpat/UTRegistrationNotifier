@@ -9,7 +9,6 @@ const DEFAULT_TARGET_STATUSES = ["open", "open; reserved", "waitlisted"]; // Ren
 let targetUrlPattern = "";
 let targetProfessor = "";
 let currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
-let runningNotifier;
 let selectedTargetStatuses = []; // Will hold user-selected statuses
 // --- End Globals ---
 
@@ -92,13 +91,13 @@ function checkCourseStatus() {
     }); // End rows.forEach
 
     if (!foundMatch) {
-        if (new Date(Date.now()).getMinutes() % 10 == 0 && new Date(Date.now()).getSeconds() < 10) {
-            let utcDate1 = new Date(Date.now());
-            runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
-        } else {
-            let utcDate1 = new Date(Date.now());
-            console.log(`Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`);
-        }
+        // if (new Date(Date.now()).getMinutes() % 10 == 0 && new Date(Date.now()).getSeconds() < 10) {
+        //     let utcDate1 = new Date(Date.now());
+        //     runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
+        // } else {
+        //     let utcDate1 = new Date(Date.now());
+        //     console.log(`Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`);
+        // }
         scheduleRefresh(currentRefreshIntervalMs);
         
     } else {
