@@ -44,7 +44,6 @@ function scheduleRefresh(intervalMs) {
 
 // --- Main Logic ---
 function checkCourseStatus() {
-    // console.log("Course Checker: Running checkCourseStatus on matched URL:", window.location.href);
     let foundMatch = false;
 
     const targetTable = document.querySelector('table.rwd-table.results');
@@ -70,12 +69,10 @@ function checkCourseStatus() {
             if (!instructorSpan) return;
             const instructorName = instructorSpan.textContent.trim();
             const uniqueNum = uniqueCell.textContent.trim();
-            // console.log(`uniqueNum : ${uniqueNum}`);
-            const status = statusCell.textContent.trim().toLowerCase();
+                        const status = statusCell.textContent.trim().toLowerCase();
 
             // **** ADDED DETAILED LOGGING BEFORE CHECK ****
-            // console.log(`Course Checker: Checking course row. Instructor: ${instructorName}, Page Status: '${status}'. Using selectedTargetStatuses: ${JSON.stringify(selectedTargetStatuses)}`);
-
+            
             if (instructorName === targetProfessor && selectedTargetStatuses.includes(status)) {
                 console.log(`Course Checker: MATCH FOUND! Instructor: ${instructorName}, Status: '${status}'. Notifying.`);
                 foundMatch = true;
@@ -87,17 +84,11 @@ function checkCourseStatus() {
             }
             else if (instructorName === targetProfessor) {
                  // This log helps see attempts for the right professor but wrong status based on selection
-                 // console.log(`Course Checker: Checking row - Target Professor: ${instructorName}, Status: '${status}' (Status not in user selection or not a match: ${!selectedTargetStatuses.includes(status)})`);
-            }
+                             }
         }
     }); // End rows.forEach
 
     if (!foundMatch) {
-        if (notify) {
-            console.log("Notifying!");
-        } else {
-            console.log("NOT NOTIFYING!");
-        }
         if (notify && (new Date(Date.now()).getMinutes() == 30 || new Date(Date.now()).getMinutes() == 0) && new Date(Date.now()).getSeconds() < (currentRefreshIntervalMs/1000 + 1)) {
             let utcDate1 = new Date(Date.now());
             runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
@@ -108,19 +99,16 @@ function checkCourseStatus() {
         scheduleRefresh(currentRefreshIntervalMs);
         
     } else {
-        // console.log("Course Checker: Match found! Resuming in 30 seconds");
-        scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
+                scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
     }
 }
 
 
 // --- Initialization ---
 (async () => {
-    // console.log("Course Checker: Content script initializing...");
-    let settings;
+        let settings;
     try {
-        // console.log("Course Checker: Attempting to load settings from chrome.storage.sync...");
-        settings = await chrome.storage.sync.get({
+                settings = await chrome.storage.sync.get({
             refreshIntervalSeconds: DEFAULT_REFRESH_INTERVAL_SECONDS,
             urlPattern: DEFAULT_URL_PATTERN,
             profName: DEFAULT_PROF_NAME,
@@ -128,8 +116,7 @@ function checkCourseStatus() {
             selectedStatuses: DEFAULT_TARGET_STATUSES
         });
         // Using JSON.parse(JSON.stringify()) for logging to ensure the current state is captured
-        // console.log("Course Checker: Settings loaded from storage (or defaults applied by .get if key was missing):", JSON.parse(JSON.stringify(settings)));
-
+        
         // --- 1. Set Target URL Pattern ---
         targetUrlPattern = settings.urlPattern ? settings.urlPattern.trim() : DEFAULT_URL_PATTERN;
         if (!settings.urlPattern || !settings.urlPattern.trim()) {
@@ -140,24 +127,20 @@ function checkCourseStatus() {
         // --- 2. Check if current URL matches the target pattern ---
         const currentUrl = window.location.href;
         if (!matchesPattern(targetUrlPattern, currentUrl)) {
-            // console.log(`Course Checker: Current URL [${currentUrl}] does not match target pattern [${targetUrlPattern}]. Stopping script on this page.`);
-            return;
+                        return;
         }
-        // console.log(`Course Checker: Current URL matches target pattern. Proceeding...`);
-
+        
         // --- 3. Set Target Professor ---
         targetProfessor = settings.profName ? settings.profName.trim() : DEFAULT_PROF_NAME;
         if (!settings.profName || !settings.profName.trim()) {
             console.warn("Course Checker: No target professor name found in storage or empty after trim, using default.");
             targetProfessor = DEFAULT_PROF_NAME;
         }
-        // console.log("Course Checker: Target Professor:", targetProfessor);
-
+        
         notify = settings.notify;
 
         // --- 4. Set Target Statuses ---
-        // console.log("Course Checker: Raw 'settings.selectedStatuses' from storage/get_default:", JSON.parse(JSON.stringify(settings.selectedStatuses)));
-        selectedTargetStatuses = settings.selectedStatuses; // This should be the user's array or DEFAULT_TARGET_STATUSES
+                selectedTargetStatuses = settings.selectedStatuses; // This should be the user's array or DEFAULT_TARGET_STATUSES
 
         if (!Array.isArray(selectedTargetStatuses)) {
             console.warn(`Course Checker: 'selectedTargetStatuses' from settings was not an array. It was: ${JSON.stringify(selectedTargetStatuses)}. Resetting to defaults.`);
@@ -167,10 +150,8 @@ function checkCourseStatus() {
             console.warn("Course Checker: 'selectedTargetStatuses' from settings was an empty array. Resetting to defaults. This might indicate an issue with saving settings.");
             selectedTargetStatuses = [...DEFAULT_TARGET_STATUSES];
         } else {
-            // console.log("Course Checker: 'selectedTargetStatuses' is valid and populated from storage/get_default.");
-        }
-        // console.log("Course Checker: Final 'selectedTargetStatuses' to be used for matching:", JSON.parse(JSON.stringify(selectedTargetStatuses)));
-
+                    }
+        
 
         // --- 5. Set Refresh Interval ---
         const seconds = parseInt(settings.refreshIntervalSeconds, 10);
@@ -180,8 +161,7 @@ function checkCourseStatus() {
             console.warn(`Course Checker: Invalid interval (${settings.refreshIntervalSeconds}) in storage or below minimum. Using default ${DEFAULT_REFRESH_INTERVAL_SECONDS}s.`);
             currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
         }
-         // console.log(`Course Checker: Using refresh interval of ${currentRefreshIntervalMs / 1000} seconds.`);
-
+         
 
     } catch (error) {
         console.error("Course Checker: Error loading settings from storage. Using defaults for all.", error);
@@ -193,20 +173,15 @@ function checkCourseStatus() {
 
          const currentUrl = window.location.href;
          if (!matchesPattern(targetUrlPattern, currentUrl)) {
-             // console.log(`Course Checker: Current URL [${currentUrl}] does not match default target pattern [${targetUrlPattern}]. Stopping script (in error catch).`);
-             return;
+                          return;
          }
-         // console.log("Course Checker: Using (due to error) default Professor:", targetProfessor);
-         // console.log("Course Checker: Using (due to error) default Target Statuses:", JSON.parse(JSON.stringify(selectedTargetStatuses)));
-         // console.log(`Course Checker: Using (due to error) default refresh interval of ${currentRefreshIntervalMs / 1000} seconds.`);
-    }
+                               }
 
     // --- 6. Run the first check ---
     if (selectedTargetStatuses.length === 0) {
         // This state should ideally be prevented by popup validation
         console.warn("Course Checker: CRITICAL - No target statuses selected or determined. The script will not find any status matches. Please check settings and console logs for errors in loading statuses.");
     }
-    // console.log("Course Checker: Initializing first checkCourseStatus call...");
-    setTimeout(checkCourseStatus, 500);
+        setTimeout(checkCourseStatus, 500);
 
 })(); // End async IIFE
