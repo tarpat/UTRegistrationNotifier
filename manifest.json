@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "UT Course Status Checker",
-    "version": "2.1",
+    "version": "2.2",
     "description": "Checks course availability for specific instructors/URLs. Configurable interval, URL pattern, and instructors.",
     "permissions": [
       "storage",

@@ -3,6 +3,7 @@ const DEFAULT_URL_PATTERN = "https://utdirect.utexas.edu/apps/registrar/course_s
 const DEFAULT_PROF_NAME = "ELNOZAHY, MOOTAZ N";
 const DEFAULT_REFRESH_INTERVAL_SECONDS = 60;
 const DEFAULT_TARGET_STATUSES = ["open", "open; reserved", "waitlisted"]; // Renamed for clarity
+const DEFAULT_NOTIFIER = false;
 // --- End Defaults ---
 
 // --- Global variables for settings ---
@@ -10,6 +11,7 @@ let targetUrlPattern = "";
 let targetProfessor = "";
 let currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
 let selectedTargetStatuses = []; // Will hold user-selected statuses
+let notify = DEFAULT_NOTIFIER;
 // --- End Globals ---
 
 
@@ -91,7 +93,12 @@ function checkCourseStatus() {
     }); // End rows.forEach
 
     if (!foundMatch) {
-        if (new Date(Date.now()).getMinutes() % 10 == 0 && new Date(Date.now()).getSeconds() < 7) {
+        if (notify) {
+            console.log("Notifying!");
+        } else {
+            console.log("NOT NOTIFYING!");
+        }
+        if (notify && (new Date(Date.now()).getMinutes() == 30 || new Date(Date.now()).getMinutes() == 0) && new Date(Date.now()).getSeconds() < 6) {
             let utcDate1 = new Date(Date.now());
             runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
         } else {
@@ -117,6 +124,7 @@ function checkCourseStatus() {
             refreshIntervalSeconds: DEFAULT_REFRESH_INTERVAL_SECONDS,
             urlPattern: DEFAULT_URL_PATTERN,
             profName: DEFAULT_PROF_NAME,
+            notify: DEFAULT_NOTIFIER,
             selectedStatuses: DEFAULT_TARGET_STATUSES
         });
         // Using JSON.parse(JSON.stringify()) for logging to ensure the current state is captured
@@ -144,6 +152,8 @@ function checkCourseStatus() {
             targetProfessor = DEFAULT_PROF_NAME;
         }
         // console.log("Course Checker: Target Professor:", targetProfessor);
+
+        notify = settings.notify;
 
         // --- 4. Set Target Statuses ---
         // console.log("Course Checker: Raw 'settings.selectedStatuses' from storage/get_default:", JSON.parse(JSON.stringify(settings.selectedStatuses)));
@@ -177,6 +187,7 @@ function checkCourseStatus() {
         console.error("Course Checker: Error loading settings from storage. Using defaults for all.", error);
         targetUrlPattern = DEFAULT_URL_PATTERN;
         targetProfessor = DEFAULT_PROF_NAME;
+        notify = DEFAULT_NOTIFIER;
         selectedTargetStatuses = [...DEFAULT_TARGET_STATUSES]; // Fallback to default statuses on error
         currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
 
