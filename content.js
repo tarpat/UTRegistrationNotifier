@@ -98,7 +98,7 @@ function checkCourseStatus() {
         } else {
             console.log("NOT NOTIFYING!");
         }
-        if (notify && (new Date(Date.now()).getMinutes() == 30 || new Date(Date.now()).getMinutes() == 0) && new Date(Date.now()).getSeconds() < 6) {
+        if (notify && (new Date(Date.now()).getMinutes() == 30 || new Date(Date.now()).getMinutes() == 0) && new Date(Date.now()).getSeconds() < (currentRefreshIntervalMs/1000 + 1)) {
             let utcDate1 = new Date(Date.now());
             runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
         } else {
