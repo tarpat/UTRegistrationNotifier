@@ -2,8 +2,10 @@ const intervalInput = document.getElementById('refreshIntervalInput');
 const urlPatternInput = document.getElementById('urlPatternInput');
 const profNameInput = document.getElementById('profNameInput');
 const saveButton = document.getElementById('saveButton');
+const openWebsite = document.getElementById('openWebsite');
 const statusMessage = document.getElementById('statusMessage');
 const notifierInput = document.getElementById('checkboxNotifications');
+const runningSwitchInput = document.getElementById('runningSwitch');
 
 // --- Defaults ---
 const DEFAULT_URL_PATTERN = "https://utdirect.utexas.edu/apps/registrar/course_schedule/20259/results/?ccyys=20259&search_type_main=COURSE&fos_cn=C+S&course_number=439&x=16&y=17";
@@ -15,6 +17,7 @@ const STATUS_OPTIONS = [
     { id: "checkboxWaitlist", value: "waitlisted", label: "Waitlisted" }
 ];
 const DEFAULT_NOTIFIER = false;
+const DEFAULT_RUNNING = false;
 const DEFAULT_SELECTED_STATUSES = ["open", "open; reserved", "waitlisted"]; // Default to all selected
 // --- End Defaults ---
 
@@ -32,12 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
         urlPattern: DEFAULT_URL_PATTERN,
         profName: DEFAULT_PROF_NAME,
         notify: DEFAULT_NOTIFIER,
-        selectedStatuses: DEFAULT_SELECTED_STATUSES // Load selected statuses
+        running: DEFAULT_RUNNING,
+        selectedStatuses: DEFAULT_SELECTED_STATUSES
     }, (data) => {
         intervalInput.value = data.refreshIntervalSeconds;
         urlPatternInput.value = data.urlPattern;
         profNameInput.value = data.profName;
         notifierInput.checked = data.notify;
+        runningSwitchInput.checked = data.running;
 
         // Set checkbox states
         const loadedStatuses = data.selectedStatuses && data.selectedStatuses.length > 0
@@ -53,11 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Save settings when the button is clicked
+
+openWebsite.addEventListener('click', () => {
+    window.open(urlPatternInput.value, '_blank').focus();
+});
+
 saveButton.addEventListener('click', () => {
     const intervalValue = parseInt(intervalInput.value, 10);
     const urlPatternValue = urlPatternInput.value.trim();
     const profNameValue = profNameInput.value.trim();
     const notifierValue = notifierInput.checked;
+    const runningValue = runningSwitchInput.checked;
 
     // --- Validation ---
     if (!urlPatternValue) {
@@ -96,6 +107,7 @@ saveButton.addEventListener('click', () => {
         urlPattern: urlPatternValue,
         profName: profNameValue,
         notify: notifierValue,
+        running: runningValue,
         selectedStatuses: selectedStatusesToSave // Save selected statuses
     }, () => {
         if (chrome.runtime.lastError) {
@@ -107,7 +119,7 @@ saveButton.addEventListener('click', () => {
             statusMessage.style.color = 'green';
             setTimeout(() => {
                 window.close();
-            }, 750);
+            }, 1000);
         }
     });
 });

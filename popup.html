@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<link rel="stylesheet" href="popup.css">
 <head>
     <title>Course Checker Settings</title>
     <style>
@@ -63,6 +64,12 @@
 <body>
     <h2>Course Checker Settings</h2>
 
+    <label>Check courses</label>
+    <label class="switch">
+        <input type="checkbox" id="runningSwitch" name="running" value="false">
+        <span class="slider round"></span>
+    </label>
+
     <div>
         <label for="urlPatternInput">Target URL Pattern:</label>
         <input type="text" id="urlPatternInput" placeholder="e.g., https://registrar.utexas.edu/schedules/*">
@@ -107,6 +114,8 @@
         <input type="number" id="refreshIntervalInput" min="5">
         <span>seconds</span>
     </div>
+
+    <button id="openWebsite">Open Website</button>
 
     <button id="saveButton">Save Settings</button>
     <div id="statusMessage"></div>

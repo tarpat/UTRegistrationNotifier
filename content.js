@@ -4,6 +4,7 @@ const DEFAULT_PROF_NAME = "ELNOZAHY, MOOTAZ N";
 const DEFAULT_REFRESH_INTERVAL_SECONDS = 60;
 const DEFAULT_TARGET_STATUSES = ["open", "open; reserved", "waitlisted"]; // Renamed for clarity
 const DEFAULT_NOTIFIER = false;
+const DEFAULT_RUNNING = false;
 // --- End Defaults ---
 
 // --- Global variables for settings ---
@@ -12,6 +13,7 @@ let targetProfessor = "";
 let currentRefreshIntervalMs = DEFAULT_REFRESH_INTERVAL_SECONDS * 1000;
 let selectedTargetStatuses = []; // Will hold user-selected statuses
 let notify = DEFAULT_NOTIFIER;
+let running = DEFAULT_RUNNING;
 // --- End Globals ---
 
 
@@ -88,7 +90,10 @@ function checkCourseStatus() {
         }
     }); // End rows.forEach
 
-    if (!foundMatch) {
+    if (!running) {
+        let utcDate1 = new Date(Date.now());
+        console.log(`Not Running from ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`);
+    } else if (!foundMatch && running) {
         if (notify && (new Date(Date.now()).getMinutes() == 30 || new Date(Date.now()).getMinutes() == 0) && new Date(Date.now()).getSeconds() < (currentRefreshIntervalMs/1000 + 1)) {
             let utcDate1 = new Date(Date.now());
             runningNotifier = new Notification("Course Notifier Running", {body: `Checked at ${utcDate1.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`});
@@ -99,7 +104,7 @@ function checkCourseStatus() {
         scheduleRefresh(currentRefreshIntervalMs);
         
     } else {
-                scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
+        scheduleRefresh(DEFAULT_REFRESH_INTERVAL_SECONDS * 500);
     }
 }
 
@@ -113,7 +118,8 @@ function checkCourseStatus() {
             urlPattern: DEFAULT_URL_PATTERN,
             profName: DEFAULT_PROF_NAME,
             notify: DEFAULT_NOTIFIER,
-            selectedStatuses: DEFAULT_TARGET_STATUSES
+            selectedStatuses: DEFAULT_TARGET_STATUSES,
+            running: DEFAULT_RUNNING
         });
         // Using JSON.parse(JSON.stringify()) for logging to ensure the current state is captured
         
@@ -138,6 +144,7 @@ function checkCourseStatus() {
         }
         
         notify = settings.notify;
+        running = settings.running;
 
         // --- 4. Set Target Statuses ---
                 selectedTargetStatuses = settings.selectedStatuses; // This should be the user's array or DEFAULT_TARGET_STATUSES
@@ -173,9 +180,9 @@ function checkCourseStatus() {
 
          const currentUrl = window.location.href;
          if (!matchesPattern(targetUrlPattern, currentUrl)) {
-                          return;
+            return;
          }
-                               }
+    }
 
     // --- 6. Run the first check ---
     if (selectedTargetStatuses.length === 0) {
