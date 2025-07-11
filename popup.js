@@ -6,29 +6,34 @@ const openWebsite = document.getElementById('openWebsite');
 const statusMessage = document.getElementById('statusMessage');
 const notifierInput = document.getElementById('checkboxNotifications');
 const runningSwitchInput = document.getElementById('runningSwitch');
-
-// --- Defaults ---
 const DEFAULT_URL_PATTERN = "https://utdirect.utexas.edu/apps/registrar/course_schedule/20259/results/?ccyys=20259&search_type_main=COURSE&fos_cn=C+S&course_number=439&x=16&y=17";
 const DEFAULT_PROF_NAME = "ELNOZAHY, MOOTAZ N";
 const DEFAULT_INTERVAL_SECONDS = 60;
-const STATUS_OPTIONS = [
-    { id: "checkboxOpen", value: "open", label: "Open" },
-    { id: "checkboxOpenReserved", value: "open; reserved", label: "Open; Reserved" },
-    { id: "checkboxWaitlist", value: "waitlisted", label: "Waitlisted" }
+const STATUS_OPTIONS = [{
+        id: "checkboxOpen",
+        value: "open",
+        label: "Open"
+    },
+    {
+        id: "checkboxOpenReserved",
+        value: "open; reserved",
+        label: "Open; Reserved"
+    },
+    {
+        id: "checkboxWaitlist",
+        value: "waitlisted",
+        label: "Waitlisted"
+    }
 ];
 const DEFAULT_NOTIFIER = false;
 const DEFAULT_RUNNING = false;
-const DEFAULT_SELECTED_STATUSES = ["open", "open; reserved", "waitlisted"]; // Default to all selected
-// --- End Defaults ---
+const DEFAULT_SELECTED_STATUSES = ["open", "open; reserved", "waitlisted"];
 
-// --- Checkbox Elements ---
 const statusCheckboxes = {};
 STATUS_OPTIONS.forEach(option => {
     statusCheckboxes[option.id] = document.getElementById(option.id);
 });
-// --- End Checkbox Elements ---
 
-// Load saved settings when the popup opens
 document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.get({
         refreshIntervalSeconds: DEFAULT_INTERVAL_SECONDS,
@@ -44,10 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
         notifierInput.checked = data.notify;
         runningSwitchInput.checked = data.running;
 
-        // Set checkbox states
-        const loadedStatuses = data.selectedStatuses && data.selectedStatuses.length > 0
-                                ? data.selectedStatuses
-                                : DEFAULT_SELECTED_STATUSES; // Fallback if stored is empty
+        const loadedStatuses = data.selectedStatuses && data.selectedStatuses.length > 0 ?
+            data.selectedStatuses :
+            DEFAULT_SELECTED_STATUSES;
 
         STATUS_OPTIONS.forEach(option => {
             if (statusCheckboxes[option.id]) {
@@ -56,8 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
-// Save settings when the button is clicked
 
 openWebsite.addEventListener('click', () => {
     window.open(urlPatternInput.value, '_blank').focus();
@@ -70,7 +72,6 @@ saveButton.addEventListener('click', () => {
     const notifierValue = notifierInput.checked;
     const runningValue = runningSwitchInput.checked;
 
-    // --- Validation ---
     if (!urlPatternValue) {
         statusMessage.textContent = 'Error: Target URL Pattern cannot be empty.';
         statusMessage.style.color = 'red';
@@ -99,8 +100,6 @@ saveButton.addEventListener('click', () => {
         statusMessage.style.color = 'red';
         return;
     }
-    // --- End Validation ---
-
 
     chrome.storage.sync.set({
         refreshIntervalSeconds: intervalValue,
@@ -108,7 +107,7 @@ saveButton.addEventListener('click', () => {
         profName: profNameValue,
         notify: notifierValue,
         running: runningValue,
-        selectedStatuses: selectedStatusesToSave // Save selected statuses
+        selectedStatuses: selectedStatusesToSave
     }, () => {
         if (chrome.runtime.lastError) {
             statusMessage.textContent = 'Error saving settings.';
