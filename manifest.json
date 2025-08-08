@@ -1,18 +1,27 @@
 {
   "manifest_version": 3,
   "name": "UT Course Status Checker",
-  "version": "3.0",
+  "version": "4.0",
   "description": "Checks course availability for specific instructors/URLs. Configurable interval, URL pattern, and instructors.",
   "permissions": [
     "storage",
     "notifications"
   ],
   "content_scripts": [{
-
     "matches": ["https://*.utexas.edu/apps/registrar/course_schedule/*", "https://registrar.utexas.edu/*"],
     "js": ["content.js"]
   }],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/longhorn.png",
+      "48": "icons/longhorn.png",
+      "128": "icons/longhorn.png"
+    }
+  },
+  "icons": {
+    "16": "icons/longhorn.png",
+    "48": "icons/longhorn.png",
+    "128": "icons/longhorn.png"
   }
 }

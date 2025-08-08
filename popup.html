@@ -1,138 +1,74 @@
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="popup.css">
-
 <head>
-    <title>Course Checker Settings</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            min-width: 350px;
-            padding: 10px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 3px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            width: 95%;
-            padding: 4px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-        }
-
-        input[type="number"] {
-            width: 60px;
-        }
-
-        button {
-            padding: 8px 15px;
-            cursor: pointer;
-            background-color: #005f86;
-            color: white;
-            border: none;
-            border-radius: 3px;
-        }
-
-        button:hover {
-            background-color: #004c6b;
-        }
-
-        #statusMessage {
-            margin-top: 10px;
-            font-weight: bold;
-            min-height: 1em;
-        }
-
-        .hint {
-            font-size: 0.8em;
-            color: #555;
-            margin-bottom: 10px;
-            margin-top: -8px;
-        }
-
-        #statusCheckboxesContainer div {
-            margin-bottom: 3px;
-        }
-
-        #statusCheckboxesContainer input[type="checkbox"] {
-            margin-right: 5px;
-            width: auto;
-            vertical-align: middle;
-        }
-
-        #statusCheckboxesContainer label.checkbox-label {
-            font-weight: normal;
-            display: inline;
-            vertical-align: middle;
-        }
-    </style>
+    <title>UT Course Checker Settings</title>
+    <link rel="stylesheet" href="popup.css">
 </head>
-
 <body>
-    <h2>Course Checker Settings</h2>
-
-    <label>Check courses</label>
-    <label class="switch">
-        <input type="checkbox" id="runningSwitch" name="running" value="false">
-        <span class="slider round"></span>
-    </label>
-
-    <div>
-        <label for="urlPatternInput">Target URL Pattern:</label>
-        <input type="text" id="urlPatternInput" placeholder="e.g., https://registrar.utexas.edu/schedules/*">
-        <div class="hint">Use * as a wildcard. The script will only run on pages matching this pattern.</div>
-    </div>
-
-    <div>
-        <label for="profNameInput">Target Professor:</label>
-        <input type="text" id="profNameInput" placeholder="e.g., ELNOZAHY, MOOTAZ N">
-        <div class="hint">Enter the full name of the professor.</div>
-    </div>
-
-    <div>
-        <label>Running Notification (30 Minutes)</label>
-        <div id="statusCheckboxesContainer">
-            <input type="checkbox" id="checkboxNotifications" name="notifier" value="false">
-            <label for="checkboxNotifer" class="checkbox-label">Notify</label>
+    <div class="popup-header">
+        <h2>UT Course Checker Settings</h2>
+        <div class="form-group">
+            <label class="switch">
+                <input type="checkbox" id="runningSwitch" name="running" value="false">
+                <span class="slider round"></span>
+            </label>
         </div>
     </div>
 
-    <div>
+    <div class="form-group">
+        <label for="urlPatternInput">Target URL Pattern:</label>
+        <input type="text" id="urlPatternInput" placeholder="e.g., https://utdirect.utexas.edu/apps/*">
+        <p class="hint">Use * as a wildcard. The script only runs on pages matching this pattern.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="profNameInput">Target Professor:</label>
+        <input type="text" id="profNameInput" placeholder="e.g., ELNOZAHY, MOOTAZ N">
+        <p class="hint">Enter the full name of the professor.</p>
+    </div>
+
+    <div class="form-group">
+        <label>Running Notification (30 Minutes)</label>
+        <div class="checkbox-item">
+            <input type="checkbox" id="checkboxNotifications" name="notifier" value="false">
+            <label for="checkboxNotifications" class="checkbox-label">Notify</label>
+        </div>
+    </div>
+
+    <div class="form-group">
         <label>Target Statuses:</label>
-        <div id="statusCheckboxesContainer">
-            <div>
+        <div class="checkbox-container">
+            <div class="checkbox-item">
                 <input type="checkbox" id="checkboxOpen" name="status" value="open">
                 <label for="checkboxOpen" class="checkbox-label">Open</label>
             </div>
-            <div>
+            <div class="checkbox-item">
                 <input type="checkbox" id="checkboxOpenReserved" name="status" value="open; reserved">
                 <label for="checkboxOpenReserved" class="checkbox-label">Open; Reserved</label>
             </div>
-            <div>
+            <div class="checkbox-item">
                 <input type="checkbox" id="checkboxWaitlist" name="status" value="waitlist">
-                <label for="checkboxWaitlist" class="checkbox-label">Waitlist</label>
+                <label for="checkboxWaitlist" class="checkbox-label">Waitlisted</label>
             </div>
         </div>
-        <div class="hint">Select which course statuses to monitor.</div>
+        <p class="hint">Select which course statuses to monitor.</p>
     </div>
 
-    <div>
+    <div class="form-group">
         <label for="refreshIntervalInput">Refresh every:</label>
-        <input type="number" id="refreshIntervalInput" min="5">
-        <span>seconds</span>
+        <div class="refresh-container">
+            <input type="number" id="refreshIntervalInput" min="5">
+            <span>seconds</span>
+        </div>
     </div>
 
-    <button id="openWebsite">Open Website</button>
-
-    <button id="saveButton">Save Settings</button>
+    <div class="button-container">
+        <button id="openWebsite">Open Website</button>
+        <button id="saveButton">Save Settings</button>
+    </div>
+    
     <div id="statusMessage"></div>
 
     <script src="popup.js"></script>
 </body>
-
 </html>

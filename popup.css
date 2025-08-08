@@ -1,58 +1,198 @@
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+/* Define a color palette using CSS variables */
+:root {
+  --primary-color: #BF5700; /* UT Burnt Orange */
+  --primary-color-dark: #A94E00;
+  --background-color: #f8f9fa;
+  --text-color: #212529;
+  --border-color: #adb5bd;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+/* --- DEFINITIVE SCROLLBAR FIX --- */
+html {
+  overflow: hidden;
 }
 
-.slider {
-  position: absolute;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.25;
+  min-width: 350px;
+  padding: 12px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  box-sizing: border-box;
+  border-radius: 12px;
+}
+
+h2 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.3em;
+}
+
+/* --- NEWLY ADDED HEADER STYLES --- */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Adjust the h2 when it's inside the new header */
+.popup-header h2 {
+  text-align: left;
+  margin-bottom: 0; /* Remove bottom margin to help with alignment */
+}
+
+/* Remove the margin from the form-group when it's in the header */
+.popup-header .form-group {
+  margin-bottom: 0;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 7px 9px;
+  margin-bottom: 3px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(191, 87, 0, 0.2);
+}
+
+.hint {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin: 0;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+button {
+  flex-grow: 1;
+  padding: 7px 10px;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: red;
-  -webkit-transition: .4s;
-  transition: .4s;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1em;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-.slider:before {
+button#openWebsite {
+  background-color: #fff;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+button:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-1px);
+}
+
+button#openWebsite:hover {
+  background-color: #f7f7f7;
+}
+
+/* --- CUSTOM CHECKBOX STYLES --- */
+.checkbox-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  min-height: 20px;
+}
+
+.checkbox-item input[type="checkbox"] {
   position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-label::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-color: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.checkbox-item input:checked + .checkbox-label::before {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-label::after {
   content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+  position: absolute;
+  display: none;
+  left: 4.5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
-input:checked+.slider {
-  background-color: green;
+.checkbox-item input:checked + .checkbox-label::after {
+  display: block;
 }
 
-input:focus+.slider {
-  box-shadow: 0 0 1px #2196F3;
+.checkbox-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2px;
 }
 
-input:checked+.slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+.checkbox-container + .hint {
+  margin-top: 4px;
 }
 
-.slider.round {
-  border-radius: 34px;
-}
+/* --- Remaining Styles --- */
+.switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+input:checked+.slider { background-color: var(--primary-color); }
+input:checked+.slider:before { transform: translateX(22px); }
+.slider.round { border-radius: 28px; }
+.slider.round:before { border-radius: 50%; }
 
-.slider.round:before {
-  border-radius: 50%;
-}
+.refresh-container { display: flex; align-items: center; gap: 10px; }
+.refresh-container input[type="number"] { width: 80px; margin-bottom: 0; }
+#statusMessage { margin-top: 12px; font-weight: 600; min-height: 1em; text-align: center; color: var(--primary-color); }
