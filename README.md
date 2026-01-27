@@ -1,4 +1,20 @@
 ![Image of UT Registration Notifier Chrome Extension](assets/demo_img.png)
+
+## Tech Stack
+
+This Chrome extension is built with:
+- **Chrome Extension Manifest V3** - Latest Chrome extension platform
+- **Vanilla JavaScript (ES6+)** - Pure JavaScript with async/await, arrow functions, and modern syntax
+- **HTML5** - Standard markup for the popup interface
+- **CSS3** - Custom styling for the extension popup
+- **Chrome Extension APIs**:
+  - `chrome.storage.sync` - Syncing settings across devices
+  - Content Scripts - Running code on UT course registration pages
+  - Notifications - Sending browser notifications for course status changes
+- **Web Notifications API** - Browser notifications with click actions
+
+No external libraries or build tools required - this is a lightweight, dependency-free extension.
+
 # How to use this tool?
 
 ## How to add extension
