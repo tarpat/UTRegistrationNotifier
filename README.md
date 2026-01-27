@@ -1,3 +1,4 @@
+![Image of UT Registration Notifier Chrome Extension](assets/demo_img.png)
 # How to use this tool?
 
 ## How to add extension
