@@ -79,7 +79,7 @@
 
                     const notificationOnClick = (event) => {
                         event.preventDefault();
-                        window.open(`https://utdirect.utexas.edu/registration/registration.WBX?s_ccyys=20259&s_af_unique=${uniqueNum}`, "_blank");
+                        window.open(`https://utdirect.utexas.edu/registration/registration.WBX?s_ccyys=20269&s_af_unique=${uniqueNum}`, "_blank");
                     };
 
                     sendNotification("Course Status Change", notificationOptions, notificationOnClick);
